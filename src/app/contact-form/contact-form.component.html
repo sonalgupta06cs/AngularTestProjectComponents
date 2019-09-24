@@ -1,0 +1,107 @@
+<form #f="ngForm" (ngSubmit)="submit(f)">
+
+	<div ngModelGroup="contact" #contact="ngModelGroup">
+
+		<!-- If you want to show the validation error for the entire form group, use the below div with ngIf -->
+		<div *ngIf="!contact.valid"></div>
+
+		<div class="form-group">
+        <label for="firstName">First Name</label>
+        <!-- Template Driven approach using ngModel which will create a control object to be associated with the input field -->
+        <input
+            required 
+            minlength="3" 
+            maxlength="10" 
+            pattern="banana" 
+            ngModel 
+            name="firstName" 
+            #firstName="ngModel"
+            (change)="log(firstName)" 
+            id="firstName" 
+            type="text" 
+            class="form-control">
+        <div 
+            class="alert alert-danger" 
+            *ngIf="firstName.touched && !firstName.valid">
+            <!-- ? safe navigation operator checks safe check, firstName should have the value before checking further -->
+            <div *ngIf="firstName?.errors.required">
+                First Name is required.
+            </div>
+            <div *ngIf="firstName?.errors.minlength">
+                First Name should be minimum {{ firstName?.errors.minlength.requiredLength }} characters.
+            </div>
+            <div *ngIf="firstName?.errors.pattern">
+                First Name doesnot match the pattern
+            </div>
+
+        </div>
+	</div>
+	
+  </div>
+
+
+   <div class="form-group">
+        <label for="comment">Comment</label>
+        <textarea 
+            ngModel name="comment" 
+            #comment="ngModel" 
+            (change)="log(comment)" 
+            id="comment" cols="" rows=""
+            class="form-control">
+        </textarea>
+	</div>
+	
+
+	<div class="checkbox">
+        <label>
+          <input type="checkbox" ngModel name="isSubscribed"> Subscribe to mailing list
+        </label> 
+	</div>    
+
+	<div class="form-group">
+        <label for="contactMethod">Contact Method</label>
+        <select multiple ngModel name="contactMethod" id="contactMethod" class="form-control">
+			<option value=""></option>
+			<!-- set the value of this property to a complex object using [ngValue] = "method" "contactMethod": { "id": 1, "name": "Email" }
+			     or using standard [value]="method.id"
+			-->
+			<option *ngFor="let method of contactMethods" [ngValue]="method">{{method.name}}</option>
+		</select>
+	</div>
+
+	<!--
+		Start Hard coded Radio buttons
+		
+	<div class="radio">
+        <label>
+          <input type="radio" ngModel name="contactMethod" value="1"> Email
+        </label> 
+	</div>
+
+	<div class="radio">
+        <label>
+          <input type="radio" ngModel name="contactMethod" value="2"> Phone
+        </label> 
+	</div>
+
+	    End Hard coded Radio buttons
+    -->
+
+	<!-- Render the radio button dynamically  -->
+	<div *ngFor="let method of contactMethods" class="radio">
+        <label>
+		  <input type="radio" ngModel name="contactMethod" [value]="method.id"> 
+		  {{method.name}}
+        </label> 
+	</div> 
+
+	<p>
+		<!-- f.value is json object which represents our form, the values entered into the form,
+			 Now we have a pipe called json which will format this value object as json, can be used as diagnostic tool to see the 
+			 object behind my forms.
+		-->
+		{{ f.value | json }}
+	</p>
+
+    <button class="btn btn-primary" type="submit" [disabled]="!f.valid">Submit</button>
+</form>
